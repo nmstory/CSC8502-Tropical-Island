@@ -23,7 +23,9 @@ void SceneNode::AddChild(SceneNode* s){
 }
 
 void SceneNode::Draw(const OGLRenderer& r) {
+
 	if (mesh) mesh->Draw();
+
 }
 
 void SceneNode::Update(float dt) {

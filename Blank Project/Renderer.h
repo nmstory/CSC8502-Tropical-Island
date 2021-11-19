@@ -16,6 +16,11 @@ public:
 	void UpdateScene(float dt) override;
 
 protected:
+	// Rendering functions
+	void DrawSkybox();
+	void DrawHeightmap();
+	void DrawWater();
+
 	// Scene Node functions 
 	void BuildNodeLists(SceneNode* from);
 	void SortNodeLists();
@@ -23,16 +28,37 @@ protected:
 	void DrawNodes();
 	void DrawNode(SceneNode* n);
 
-	HeightMap* heightMap;
+	// Lighting
+	Light* light;
+	Shader* lightShader;
+	Shader* reflectShader;
+
+	// Scene Management
 	SceneNode* root;
-
 	Frustum frameFrustum;
+	std::vector <SceneNode*> transparentNodeList;
+	std::vector <SceneNode*> nodeList;
 
-	Camera* camera;
-	Shader* shader;
+	// Heightmap
+	HeightMap* heightMap;
+	Shader* heightMapShader;
 	GLuint	terrainTexRock;
 	GLuint	terrainTexDirt;
 
-	std::vector <SceneNode*> transparentNodeList;
-	std::vector <SceneNode*> nodeList;
+	// Skybox
+	GLuint cubeMap;
+	Shader* skyboxShader;
+	Mesh* quad;
+
+	// Water
+	GLuint waterTex;
+	float waterRotate;
+	float waterCycle;
+
+	// Misc.
+	Camera* camera;
+
+
+
+
 };

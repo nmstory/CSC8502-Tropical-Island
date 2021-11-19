@@ -24,6 +24,12 @@ public:
 	Mesh * GetMesh() const { return mesh; }
 	void SetMesh(Mesh * m) { mesh = m; }
 
+	Shader* GetShader()  const { return shader; }
+	void SetShader(Shader* s) { shader = s; }
+
+	Light* GetLight()  const { return light; }
+	void SetLight(Light* l) { light = l; }
+
 	void AddChild(SceneNode * s);
 	
 	virtual void Update(float dt);
@@ -59,8 +65,9 @@ protected:
 	Vector4 colour;
 	std::vector <SceneNode*> children;
 
-	// SceneNode Tutorial 7 (Scene Management) additions
 	float distanceFromCamera;
 	float boundingRadius;
 	GLuint texture;
+	Shader* shader;
+	Light* light;
 };

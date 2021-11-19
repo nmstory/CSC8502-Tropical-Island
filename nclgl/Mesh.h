@@ -21,6 +21,7 @@ _-_-_-_-_-_-_-""  ""
 #include "OGLRenderer.h"
 #include <vector>
 #include <string>
+#include "SceneNode.h"
 
 //A handy enumerator, to determine which member of the bufferObject array
 //holds which data
@@ -39,7 +40,7 @@ enum MeshBuffer {
 	MAX_BUFFER
 };
 
-class Mesh	{
+class Mesh : public SceneNode {
 public:	
 	static Mesh* GenerateTriangle();
 	static Mesh* GenerateQuad();
@@ -52,7 +53,7 @@ public:
 	Mesh(void);
 	~Mesh(void);
 
-	void Draw();
+	virtual void Draw();
 	void DrawSubMesh(int i);
 
 	static Mesh* LoadFromMeshFile(const std::string& name);

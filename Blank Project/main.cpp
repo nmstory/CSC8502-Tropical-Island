@@ -2,6 +2,8 @@
 #include "Renderer.h"
 
 // https://cpetry.github.io/TextureGenerator-Online/
+//https://www.cleanpng.com/png-skybox-texture-mapping-cube-mapping-sky-cloud-920475/
+
 
 int main() {
 	Window w("CSC8502 Tropical Island", 1280, 720, false);
@@ -14,8 +16,8 @@ int main() {
 		return -1;
 	}
 
-	w.LockMouseToWindow(true);
-	w.ShowOSPointer(false);
+	//w.LockMouseToWindow(true);
+	//w.ShowOSPointer(false);
 
 	while (w.UpdateWindow() && !Window::GetKeyboard()->KeyDown(KEYBOARD_ESCAPE)) {
 		float timestep = w.GetTimer()->GetTimeDeltaSeconds();

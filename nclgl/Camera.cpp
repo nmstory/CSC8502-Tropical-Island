@@ -22,25 +22,45 @@ void Camera::UpdateCamera(float dt) {
 	Vector3 right = rotation * Vector3(1, 0, 0);
 
 	float speed = 30.0f * dt;
+	
+	if (isFollowingTrack) {
+		position += (result * dt);
 
-	// modifying position variable to move camera
-	if (Window::GetKeyboard()->KeyDown(KEYBOARD_W)) {
-		position += forward * speed;
+		Vector3 po = position - track.front();
+		if (po.Length() < 0.1f) {
+			track.push(track.front());
+			track.pop();
+
+			result = (track.front() - position);
+			result.Normalise();
+			result = result * cameraTrackSpeed;
+		}
 	}
-	if (Window::GetKeyboard()->KeyDown(KEYBOARD_S)) {
-		position -= forward * speed;
+	else {
+		// modifying position variable to move camera
+		if (Window::GetKeyboard()->KeyDown(KEYBOARD_W)) {
+			position += forward * speed;
+		}
+		if (Window::GetKeyboard()->KeyDown(KEYBOARD_S)) {
+			position -= forward * speed;
+		}
+		if (Window::GetKeyboard()->KeyDown(KEYBOARD_A)) {
+			position -= right * speed;
+		}
+		if (Window::GetKeyboard()->KeyDown(KEYBOARD_D)) {
+			position += right * speed;
+		}
+		if (Window::GetKeyboard()->KeyDown(KEYBOARD_SHIFT)) {
+			position.y += speed;
+		}
+		if (Window::GetKeyboard()->KeyDown(KEYBOARD_SPACE)) {
+			position.y -= speed;
+		}
 	}
-	if (Window::GetKeyboard()->KeyDown(KEYBOARD_A)) {
-		position -= right * speed;
-	}
-	if (Window::GetKeyboard()->KeyDown(KEYBOARD_D)) {
-		position += right * speed;
-	}
-	if (Window::GetKeyboard()->KeyDown(KEYBOARD_SHIFT)) {
-		position.y += speed;
-	}
-	if (Window::GetKeyboard()->KeyDown(KEYBOARD_SPACE)) {
-		position.y -= speed;
+
+	if (Window::GetKeyboard()->KeyDown(KEYBOARD_F)) {
+		isFollowingTrack = !isFollowingTrack;
+		previousPos = position;
 	}
 }
 

@@ -3,7 +3,7 @@
 
 using std::string;
 
-Mesh::Mesh(void)	{
+Mesh::Mesh(void) {
 	glGenVertexArrays(1, &arrayObject);
 	
 	for(int i = 0; i < MAX_BUFFER; ++i) {
@@ -24,7 +24,7 @@ Mesh::Mesh(void)	{
 	weightIndices	= nullptr;
 }
 
-Mesh::~Mesh(void)	{
+Mesh::~Mesh(void) {
 	glDeleteVertexArrays(1, &arrayObject);			//Delete our VAO
 	glDeleteBuffers(MAX_BUFFER, bufferObject);		//Delete our VBOs
 
