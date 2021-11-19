@@ -30,8 +30,8 @@ protected:
 
 	// Lighting
 	Light* light;
-	Shader* lightShader;
-	Shader* reflectShader;
+	GLuint bumpMapDirt;
+	GLuint bumpMapRock;
 
 	// Scene Management
 	SceneNode* root;

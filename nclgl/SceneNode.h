@@ -4,7 +4,12 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Mesh.h"
-#include <vector >
+#include <vector>
+
+class Mesh;
+class Light;
+class Shader;
+class OGLRenderer;
 
 class SceneNode {
 public:

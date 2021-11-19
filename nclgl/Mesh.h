@@ -40,7 +40,7 @@ enum MeshBuffer {
 	MAX_BUFFER
 };
 
-class Mesh : public SceneNode {
+class Mesh {
 public:	
 	static Mesh* GenerateTriangle();
 	static Mesh* GenerateQuad();

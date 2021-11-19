@@ -21,45 +21,49 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 		TEXTUREDIR"sky2-south.png", TEXTUREDIR"sky2-north.png",
 		SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, 0);*/
 
-	waterTex = SOIL_load_OGL_texture(TEXTUREDIR"water.TGA", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	
 
-	if (!heightMap || !cubeMap || !waterTex) {
+	if (!heightMap || !cubeMap) {
 		return;
 	}
 
 	Vector3 heightmapSize = heightMap->GetHeightmapSize();
-	light = new Light(heightmapSize * Vector3(0.5f, 1.5f, 0.5f), Vector4(1, 1, 1, 1), heightmapSize.x);
+	light = new Light(heightmapSize * Vector3(0.5f, 2.5f, 0.5f), Vector4(0.9, 0.9, 0.9, 1), heightmapSize.x);
+
 	std::queue<Vector3> cameraTrack; // temp!!
 	cameraTrack.emplace(Vector3(0, 1, 1));
 	camera = new Camera(-40, 270, heightmapSize * Vector3(0.5, 2, 0.5), cameraTrack);
 
 	heightMapShader = new Shader("heightmapVertex.glsl", "heightmapFragment.glsl");
-	reflectShader = new Shader("reflectVertex.glsl", "reflectFragment.glsl");
 	skyboxShader = new Shader("skyboxVertex.glsl", "skyboxFragment.glsl");
-	lightShader = new Shader("PerPixelVertex.glsl", "PerPixelFragment.glsl");
+	//lightShader = new Shader("PerPixelVertex.glsl", "PerPixelFragment.glsl");
 
-	if (!heightMapShader->LoadSuccess() || !reflectShader->LoadSuccess() || !skyboxShader->LoadSuccess() || !lightShader->LoadSuccess() ) {
+	if (!heightMapShader->LoadSuccess() || !skyboxShader->LoadSuccess()) {
 		return;
 	}
 
 	//terrainTex = SOIL_load_OGL_texture(TEXTUREDIR"Barren Reds.JPG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	terrainTexDirt = SOIL_load_OGL_texture(TEXTUREDIR"Dirt_DIFF.JPG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	terrainTexRock = SOIL_load_OGL_texture(TEXTUREDIR"Rock_04_DIFF.PNG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
-	if (!terrainTexDirt || !terrainTexRock) {
+
+	bumpMapDirt = SOIL_load_OGL_texture(TEXTUREDIR"Dirt_NRM.JPG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	bumpMapRock = SOIL_load_OGL_texture(TEXTUREDIR"Rock_04_NRM.PNG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
+	if (!terrainTexDirt || !terrainTexRock || !bumpMapDirt || !bumpMapRock) {
 		return;
 	}
 
 	SetTextureRepeating(terrainTexDirt, true);
 	SetTextureRepeating(terrainTexRock, true);
-	SetTextureRepeating(waterTex, true);
+	SetTextureRepeating(bumpMapDirt, true);
+	SetTextureRepeating(bumpMapRock, true);
 
 	projMatrix = Matrix4::Perspective(1.0f, 10000.0f, (float)width / (float)height, 45.0f);
 
 	// SceneNode
-	root = new SceneNode();
-	root->AddChild(heightMap);
+	//root = new SceneNode();
+	//root->AddChild(heightMap);
 
-	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
@@ -76,10 +80,12 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 }
 
 Renderer::~Renderer(void) {
+	// check we definitely delete everything!
 	delete heightMap;
 	delete camera;
 	delete heightMapShader;
 	delete quad;
+	delete light;
 }
 
 void Renderer::UpdateScene(float dt) {
@@ -161,8 +167,8 @@ void Renderer::DrawNode(SceneNode* n) {
 void Renderer::RenderScene() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//DrawSkybox();
-	//DrawHeightmap();
+	DrawSkybox();
+	DrawHeightmap();
 	//DrawWater();
 }
 
@@ -178,9 +184,9 @@ void Renderer::DrawSkybox() {
 }
 
 void Renderer::DrawHeightmap() {
+	// Heightmap
 	BindShader(heightMapShader);
-	UpdateShaderMatrices();
-
+	
 	glUniform1i(glGetUniformLocation(heightMapShader->GetProgram(), "diffuseTexDirt"), 0);
 	glUniform1i(glGetUniformLocation(heightMapShader->GetProgram(), "diffuseTexRock"), 1);
 	glActiveTexture(GL_TEXTURE0);
@@ -189,12 +195,45 @@ void Renderer::DrawHeightmap() {
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, terrainTexRock);
 
-	SetShaderLight(*light);
+	// Lighting
+	glUniform1i(glGetUniformLocation(heightMapShader->GetProgram(), "bumpTexDirt"), 2);
+	glUniform1i(glGetUniformLocation(heightMapShader->GetProgram(), "bumpTexRock"), 3);
+	glActiveTexture(GL_TEXTURE0 + 2);
+	glBindTexture(GL_TEXTURE_2D, bumpMapDirt);
+	glActiveTexture(GL_TEXTURE0 + 3);
+	glBindTexture(GL_TEXTURE_2D, bumpMapRock);
 
+	glUniform3fv(glGetUniformLocation(heightMapShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
+	
+	// Extra
+	SetShaderLight(*light);
+	UpdateShaderMatrices();
 	heightMap->Draw();
 }
 
+/*
+void Renderer::DrawLighting() {
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	BindShader(lightingShader);
+
+	glUniform1i(glGetUniformLocation(lightingShader->GetProgram(), "diffuseTex"), 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glUniform1i(glGetUniformLocation(lightingShader->GetProgram(), "bumpTex"), 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, bumpMap);
+
+	glUniform3fv(glGetUniformLocation(lightingShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
+
+	UpdateShaderMatrices();
+	SetShaderLight(*light);
+
+	heightMap->Draw();
+}*/
+
 void Renderer::DrawWater() {
+	/*
 	BindShader(reflectShader);
 
 	glUniform3fv(glGetUniformLocation(reflectShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
@@ -216,6 +255,7 @@ void Renderer::DrawWater() {
 
 	UpdateShaderMatrices();
 	quad->Draw();
+	*/
 }
 	
 
