@@ -5,9 +5,9 @@
 Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	//heightMap = new HeightMap(TEXTUREDIR"noise.png");
 	quad = Mesh::GenerateQuad();
+	waterPlane = Mesh::GenerateWaterPlane(Vector3(0,0,0), 500);
 
 	heightMap = new HeightMap(TEXTUREDIR"tenerifeINVERT.png");
-	
 	
 	cubeMap = SOIL_load_OGL_cubemap(
 		TEXTUREDIR"sky_west.jpg", TEXTUREDIR"sky_east.jpg",
@@ -65,14 +65,16 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	//root = new SceneNode();
 	//root->AddChild(heightMap);
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
 	// Which to remove?
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	//glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+	
 
 	waterRotate = 0.0f;
 	waterCycle = 0.0f;
@@ -223,10 +225,16 @@ void Renderer::DrawWater() {
 	//glPatchParameteri(GL_PATCH_VERTICES, 4);
 	//glDrawArrays(GL_PATCHES, 0, 8);
 	//glDrawArraysInstanced(GL_PATCHES, 0, 6, 64 * 64);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 
 	UpdateShaderMatrices();
-	quad->Draw();
+	waterPlane->Draw();
+
+	// Turn off wireframe mode
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 
 	/*

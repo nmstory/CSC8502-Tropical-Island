@@ -44,6 +44,7 @@ class Mesh {
 public:	
 	static Mesh* GenerateTriangle();
 	static Mesh* GenerateQuad();
+	static Mesh* GenerateWaterPlane(Vector3 position, float size);
 
 	struct SubMesh {
 		int start;

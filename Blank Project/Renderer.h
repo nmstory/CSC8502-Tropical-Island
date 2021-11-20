@@ -51,6 +51,7 @@ protected:
 	Mesh* quad;
 
 	// Water
+	Mesh* waterPlane;
 	GLuint waterTex;
 	Shader* waterShader;
 	float waterRotate;

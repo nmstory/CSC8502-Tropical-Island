@@ -5,6 +5,9 @@
 //https://www.cleanpng.com/png-skybox-texture-mapping-cube-mapping-sky-cloud-920475/
 // https://3dtextures.me/2017/12/28/water-001/
 
+//https://catlikecoding.com/unity/tutorials/flow/waves/
+//http://fire-face.com/personal/water/
+
 int main() {
 	Window w("CSC8502 Tropical Island", 1280, 720, false);
 	if (!w.HasInitialised()) {
