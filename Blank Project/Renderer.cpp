@@ -32,13 +32,14 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 
 	std::queue<Vector3> cameraTrack; // temp!!
 	cameraTrack.emplace(Vector3(0, 1, 1));
-	camera = new Camera(-40, 270, heightmapSize * Vector3(0.5, 2, 0.5), cameraTrack);
+	//camera = new Camera(-40, 270, heightmapSize * Vector3(0.5, 2, 0.5), cameraTrack);
+	camera = new Camera(-40, 270, Vector3(0,0,0), cameraTrack);
 
 	heightMapShader = new Shader("heightmapVertex.glsl", "heightmapFragment.glsl");
 	skyboxShader = new Shader("skyboxVertex.glsl", "skyboxFragment.glsl");
-	//lightShader = new Shader("PerPixelVertex.glsl", "PerPixelFragment.glsl");
+	waterShader = new Shader("WaterVertex.glsl", "WaterFrag.glsl", /*"GeometryShader.glsl"*/ "", "TCS.glsl", "TES.glsl");
 
-	if (!heightMapShader->LoadSuccess() || !skyboxShader->LoadSuccess()) {
+	if (!heightMapShader->LoadSuccess() || !skyboxShader->LoadSuccess() || !waterShader->LoadSuccess()) {
 		return;
 	}
 
@@ -167,9 +168,9 @@ void Renderer::DrawNode(SceneNode* n) {
 void Renderer::RenderScene() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	DrawSkybox();
-	DrawHeightmap();
-	//DrawWater();
+	//DrawSkybox();
+	//DrawHeightmap();
+	DrawWater();
 }
 
 void Renderer::DrawSkybox() {
@@ -211,28 +212,23 @@ void Renderer::DrawHeightmap() {
 	heightMap->Draw();
 }
 
-/*
-void Renderer::DrawLighting() {
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	BindShader(lightingShader);
+void Renderer::DrawWater() {
+	/*
+	GLint MaxPatchVertices = 0;
+	glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
+	std::cout << "The maximum supported patch vertices: " << MaxPatchVertices << std::endl;
+	*/
+	BindShader(waterShader);
 
-	glUniform1i(glGetUniformLocation(lightingShader->GetProgram(), "diffuseTex"), 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glUniform1i(glGetUniformLocation(lightingShader->GetProgram(), "bumpTex"), 1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, bumpMap);
-
-	glUniform3fv(glGetUniformLocation(lightingShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
+	//glPatchParameteri(GL_PATCH_VERTICES, 4);
+	//glDrawArrays(GL_PATCHES, 0, 8);
+	//glDrawArraysInstanced(GL_PATCHES, 0, 6, 64 * 64);
+	glPatchParameteri(GL_PATCH_VERTICES, 4);
 
 	UpdateShaderMatrices();
-	SetShaderLight(*light);
+	quad->Draw();
 
-	heightMap->Draw();
-}*/
 
-void Renderer::DrawWater() {
 	/*
 	BindShader(reflectShader);
 

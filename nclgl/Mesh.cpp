@@ -67,7 +67,8 @@ Mesh* Mesh::GenerateQuad() {
 	Mesh* m = new Mesh();
 	m->numVertices = 4;
 
-	m->type = GL_TRIANGLE_STRIP; // changing primitive from GL_TRIANGLES to GL_TRIANGLE_STRIP
+	//m->type = GL_TRIANGLE_STRIP; // changing primitive from GL_TRIANGLES to GL_TRIANGLE_STRIP
+	m->type = GL_PATCHES; // changing primitive from GL_TRIANGLES to GL_TRIANGLE_STRIP
 
 	m->vertices = new Vector3[m->numVertices];
 	m->textureCoords = new Vector2[m->numVertices];
@@ -98,13 +99,15 @@ Mesh* Mesh::GenerateQuad() {
 
 void Mesh::Draw()	{
 	glBindVertexArray(arrayObject);
+	
+
 	if(bufferObject[INDEX_BUFFER]) {
 		glDrawElements(type, numIndices, GL_UNSIGNED_INT, 0);
 	}
 	else{
 		glDrawArrays(type, 0, numVertices);
 	}
-	glBindVertexArray(0);	
+	glBindVertexArray(0);
 }
 
 void Mesh::DrawSubMesh(int i) {

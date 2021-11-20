@@ -52,13 +52,10 @@ protected:
 
 	// Water
 	GLuint waterTex;
+	Shader* waterShader;
 	float waterRotate;
 	float waterCycle;
 
 	// Misc.
 	Camera* camera;
-
-
-
-
 };

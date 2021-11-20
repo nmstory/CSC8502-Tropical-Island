@@ -3,7 +3,7 @@
 
 // https://cpetry.github.io/TextureGenerator-Online/
 //https://www.cleanpng.com/png-skybox-texture-mapping-cube-mapping-sky-cloud-920475/
-
+// https://3dtextures.me/2017/12/28/water-001/
 
 int main() {
 	Window w("CSC8502 Tropical Island", 1280, 720, false);
@@ -16,7 +16,7 @@ int main() {
 		return -1;
 	}
 
-	w.LockMouseToWindow(true);
+	//w.LockMouseToWindow(true);
 	//w.ShowOSPointer(false);
 
 	while (w.UpdateWindow() && !Window::GetKeyboard()->KeyDown(KEYBOARD_ESCAPE)) {
