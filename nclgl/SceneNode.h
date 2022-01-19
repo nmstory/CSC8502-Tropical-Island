@@ -4,11 +4,29 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Mesh.h"
-#include <vector >
+#include "MeshAnimation.h"
+#include "MeshMaterial.h"
+#include <vector>
+
+class Mesh;
+class Light;
+class Shader;
+class OGLRenderer;
+class Renderer;
+
+struct NodeTexture {
+	NodeTexture(GLchar* n, GLuint t) {
+		this->name = n;
+		this->tex = t;
+	}
+
+	GLchar* name;
+	GLuint tex;
+};
 
 class SceneNode {
 public:
-	SceneNode(Mesh * m = NULL, Vector4 colour = Vector4(1, 1, 1, 1));
+	SceneNode(Mesh* m = NULL, Shader* shader = NULL, Vector4 colour = Vector4(1, 1, 1, 1), float boundingSize = 1);
 	~SceneNode();
 	
 	void SetTransform(const Matrix4 & matrix) { transform = matrix; }
@@ -29,11 +47,18 @@ public:
 
 	Light* GetLight()  const { return light; }
 	void SetLight(Light* l) { light = l; }
+	
+	MeshAnimation* GetAnimation()  const { return anim; }
+	void SetAnimation(MeshAnimation* a) { this->anim = a; }
+
+	void AddTexture(GLchar* name, GLuint tex) { textures.push_back(NodeTexture(name, tex)); }
+
+	void SetRequireCamera(bool b) { this->requireCamera = b; }
 
 	void AddChild(SceneNode * s);
 	
 	virtual void Update(float dt);
-	virtual void Draw(const OGLRenderer & r);
+	virtual void Draw(Renderer& r);
 
 	std::vector <SceneNode*>::const_iterator GetChildIteratorStart() {
 		return children.begin();
@@ -42,7 +67,6 @@ public:
 		return children.end();
 	}
 
-	// SceneNode Tutorial 7 (Scene Management) additions
 	float GetBoundingRadius() const { return boundingRadius; }
 	void SetBoundingRadius(float f) { boundingRadius = f; }
 
@@ -55,7 +79,7 @@ public:
 	static bool CompareByCameraDistance(SceneNode* a, SceneNode* b) {
 		return (a->distanceFromCamera < b->distanceFromCamera) ? true : false;
 	}
-
+	bool animated = false;
 protected:
 	SceneNode* parent;
 	Mesh* mesh;
@@ -69,5 +93,15 @@ protected:
 	float boundingRadius;
 	GLuint texture;
 	Shader* shader;
-	Light* light;
+	Light* light = NULL;
+	std::vector<NodeTexture> textures;
+
+	// Animations
+	MeshAnimation* anim;
+	MeshMaterial* material;
+	int currentFrame;
+	
+
+	bool requireCamera;
+
 };

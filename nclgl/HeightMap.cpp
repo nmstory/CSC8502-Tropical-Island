@@ -55,8 +55,5 @@ HeightMap::HeightMap(const std::string& name) {
 }
 
 void HeightMap::Draw() {
-	this->Mesh::Draw(); // Calling base Draw() NEEDED?
-
-
-
+	this->Mesh::Draw(); // Calling base Draw()
 }

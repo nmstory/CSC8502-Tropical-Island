@@ -21,19 +21,14 @@ void Camera::UpdateCamera(float dt) {
 	Vector3 forward = rotation * Vector3(0, 0, -1); // defining direction
 	Vector3 right = rotation * Vector3(1, 0, 0);
 
-	float speed = 30.0f * dt;
+	float speed = 300.0f * dt;
 	
 	if (isFollowingTrack) {
-		position += (result * dt);
+		position += (direction * (speed / 100));
 
 		Vector3 po = position - track.front();
 		if (po.Length() < 0.1f) {
-			track.push(track.front());
-			track.pop();
-
-			result = (track.front() - position);
-			result.Normalise();
-			result = result * cameraTrackSpeed;
+			NextWaypoint();
 		}
 	}
 	else {
@@ -57,10 +52,8 @@ void Camera::UpdateCamera(float dt) {
 			position.y -= speed;
 		}
 	}
-
 	if (Window::GetKeyboard()->KeyDown(KEYBOARD_F)) {
 		isFollowingTrack = !isFollowingTrack;
-		previousPos = position;
 	}
 }
 
@@ -76,4 +69,13 @@ Matrix4 Camera::BuildViewMatrix() {
 	return Matrix4::Rotation(-pitch, Vector3(1, 0, 0)) *
 		Matrix4::Rotation(-yaw, Vector3(0, 1, 0)) *
 		Matrix4::Translation(-position);
+}
+
+void Camera::NextWaypoint() {
+	track.push(track.front());
+	track.pop();
+
+	direction = (track.front() - position);
+	direction.Normalise();
+	direction = direction * cameraTrackSpeed;
 }
