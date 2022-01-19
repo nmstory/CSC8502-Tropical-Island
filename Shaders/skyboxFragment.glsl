@@ -9,5 +9,6 @@ in Vertex {
 out vec4 fragColour;
 
 void main(void) {
-	fragColour = texture(cubeTex ,normalize(IN.viewDir ));
+	// Sampling the cube map texture from the view direction, calculated in skybox vertex shader
+	fragColour = texture(cubeTex, normalize(IN.viewDir));
 }

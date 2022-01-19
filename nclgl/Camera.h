@@ -10,7 +10,6 @@ public:
 		yaw = 0.0f;
 		pitch = 0.0f;
 		isFollowingTrack = false;
-		time = 0;
 	}
 
 	Camera(float pitch, float yaw, Vector3 position, std::queue<Vector3> track) {
@@ -23,12 +22,8 @@ public:
 		}
 		else {
 			isFollowingTrack = true;
-			result = (track.front() - position);
-			result.Normalise();
-			result = result * cameraTrackSpeed; // speed
+			NextWaypoint();
 		}
-		
-		time = 0;
 	}
 
 	~Camera(void) {};
@@ -46,16 +41,15 @@ public:
 	void      SetPitch(float p) { pitch = p; }
 
 protected:
+	void NextWaypoint();
+
 	float yaw;
 	float pitch;
 	Vector3 position;
 
-	float time;
-	Vector3 previousPos;
+	Vector3 direction;
 	bool isFollowingTrack;
-	std::queue<Vector3> track; // Camera track of waypoints
 	float cameraTrackSpeed = 50.0f;
-
-	Vector3 result;
+	std::queue<Vector3> track; // Camera track of waypoints
 	
 };
