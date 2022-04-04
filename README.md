@@ -27,4 +27,4 @@ For this coursework, I produced a tropical island scene by implementing a variet
 Most of the functionality is demonstrated in the following [_demo video_](https://www.youtube.com/watch?v=HcqvJLa-9MI)
 
 ## OpenGLRendering Library
-Many calls to OpenGL are handled by an intermediary library called the OpenGLRendering Library, developed by [_Newcastle University_](https://www.ncl.ac.uk, for support with low-level interactions.
+Many calls to OpenGL are handled by an intermediary library called the OpenGLRendering Library, developed by [_Newcastle University_](https://www.ncl.ac.uk), for support with low-level interactions.
